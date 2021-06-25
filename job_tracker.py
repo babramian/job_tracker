@@ -14,6 +14,9 @@ Original file is located at
 import json
 import datetime
 import os
+import sys
+
+file_path = sys.argv[1]
 
 job_title=[]
 job_description=[]
@@ -53,7 +56,7 @@ while True:
   if int(input()) == 0:
     break
 
-with open('/content/drive/MyDrive/job_hunt/job list.txt', 'r+') as file:
+with open(file_path, 'r+') as file:
     data = json.load(file)
     for i in range(len(job_title)):
       data['job list'].append(
@@ -73,8 +76,9 @@ with open('/content/drive/MyDrive/job_hunt/job list.txt', 'r+') as file:
     # data.update(jobs_to_append)
     file.seek(0)
     json.dump(data, file, indent = 4)
+    print(data)
 
-print(jobs_to_append)
+
 print("Printed above data as json.")
 
 # with open('/content/drive/MyDrive/job_hunt/job list.txt', 'w') as outfile:

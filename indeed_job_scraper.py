@@ -8,6 +8,7 @@ from fake_useragent import UserAgent
 import pandas as pd
 import sys
 import time
+import json
 
 # Using fake user agents
 options = Options()
@@ -17,10 +18,9 @@ print(userAgent)
 options.add_argument(f'user-agent={userAgent}')
 driver = webdriver.Chrome(chrome_options=options, executable_path='Chrome Driver/chromedriver')# Launch Chrome web driver
 
-# get username & password from terminal launch command
+# get username & password from terminal launch command, as well as json output path
 username = sys.argv[1]
 password = sys.argv[2]
-
 
 
 # connect to applied jobs page
@@ -35,15 +35,19 @@ inputElement.submit()
 print("Press any key when you've completed the captcha")
 input()
 
-# find 
+# Get two lists, one for the app cards and one for the job locations
 appCards = driver.find_elements_by_xpath('//div[contains(@class, "atw-AppCard")]')
 locations = driver.find_elements_by_xpath('//div[contains(@class, "atw-JobInfo-companyLocation")]')
 count = 0
+
+# Create list variables to be filled
 dataIds = []
 links = []
 job_titles = []
 companys = []
 remote = []
+
+# Traverse through each app card, retrieve and save job data id, link, and title
 for appCard in appCards:
 	dataid = appCard.get_attribute('data-id')
 	
@@ -54,7 +58,7 @@ for appCard in appCards:
 		hrefCard = currentCard.find_element_by_xpath(f'//a[contains(@href, "https://www.indeed.com/viewjob?jk={dataid}&hl=en")]')
 		job_titles.append(hrefCard.text.split("\n", 1)[0])
 
-
+# For each location, retrieve and save the hiring company and whether or not the job is remote
 for location in locations:
 	companys.append(location.text.split("\n", 1)[0])
 	remote.append(1) if ("Remote" in location.text or "REMOTE" in location.text or "Remote" in job_titles[count] or "REMOTE" in job_titles[count]) else remote.append(0)
@@ -62,3 +66,16 @@ for location in locations:
 	count += 1
 print(companys)
 print(remote)
+
+# Save variables to a pandas DataFrame and export it as a csv file
+df = pd.DataFrame(
+	{'job_title' : job_titles,
+	'data_id' : dataIds,
+	'company' : companys,
+	'remote' : remote,
+	'link' : links
+	})
+
+df.to_csv('jobs.csv', index=False)
+
+print("Saved above data as jobs.csv.")

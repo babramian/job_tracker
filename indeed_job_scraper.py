@@ -12,8 +12,7 @@ import json
 
 # Using fake user agents
 options = Options()
-ua = UserAgent()
-userAgent = ua.random
+userAgent = UserAgent().random
 print(userAgent)
 options.add_argument(f'user-agent={userAgent}')
 driver = webdriver.Chrome(chrome_options=options, executable_path='Chrome Driver/chromedriver')# Launch Chrome web driver
@@ -21,7 +20,6 @@ driver = webdriver.Chrome(chrome_options=options, executable_path='Chrome Driver
 # get username & password from terminal launch command, as well as json output path
 username = sys.argv[1]
 password = sys.argv[2]
-
 
 # connect to applied jobs page
 driver.get('https://myjobs.indeed.com/applied?hl=en&co=US&from=_atweb_gnav-jobsearch--jasx')
@@ -79,3 +77,14 @@ df = pd.DataFrame(
 df.to_csv('jobs.csv', index=False)
 
 print("Saved above data as jobs.csv.")
+
+
+# List of variables to work on tracking
+# 'job_description' : job_description[i],
+# 'job_type' : job_type[i],
+# 'salary' : salary[i],
+# 'location' : location[i],
+# 'benefits' : benefits[i],
+# 'applied' : applied[i],
+# 'response' : response[i],
+# 'interview' : interview[i]
